@@ -1,5 +1,6 @@
 package com.citymanager.Project.controllers;
 
+import com.citymanager.Project.entities.BudgetEntity;
 import com.citymanager.Project.entities.ProjectEntity;
 import com.citymanager.Project.services.ProjectService;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +38,10 @@ public class ProjectController {
     public void budgetExpense() {
         // 1. enviar PATH method o valor do projeto
         return;
+    }
+    
+    @GetMapping("/{id}/budget")
+    public BudgetEntity getBudget(@PathVariable Long id) {
+    	return projectService.getBudget(id);
     }
 }

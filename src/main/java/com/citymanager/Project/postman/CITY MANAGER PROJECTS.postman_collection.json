@@ -1,0 +1,22 @@
+{
+	"variables": [],
+	"info": {
+		"name": "CITY MANAGER PROJECTS",
+		"_postman_id": "3c1e065e-d432-0ae7-2aa3-bd1ba36560e4",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TESTE GET BUDGET VIA WEBCLIENT",
+			"request": {
+				"url": "localhost:8080/projects/1/budget",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
