@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "CITY MANAGER PROJECTS",
-		"_postman_id": "3c1e065e-d432-0ae7-2aa3-bd1ba36560e4",
+		"_postman_id": "05d998ea-7bce-790a-f4c2-b01fe7ee927f",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -14,6 +14,26 @@
 				"method": "GET",
 				"header": [],
 				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "CREATE PROJECT",
+			"request": {
+				"url": "localhost:8080/projects",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"secretariatID\": 2,\n\t\"cost\": 5000,\n\t\"title\": \"Tapando o Esgoto\",\n\t\"description\": \"Revitalização do corrego da paz!\",\n\t\"folder\": \"HEALTH\"\n}"
+				},
 				"description": ""
 			},
 			"response": []

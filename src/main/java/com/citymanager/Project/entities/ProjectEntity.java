@@ -15,7 +15,7 @@ public class ProjectEntity {
     private Long id;
 
     @Column(name = "secretariat_id")
-    private Long secretariatId;
+    private Long secretariatID;
 
     private Float cost;
     private String title;
