@@ -45,53 +45,67 @@ public class ProjectController {
     		System.out.println("Deu ruim, secretaria esta sob investigação!");
     		return null;
     	}
-        // 2. um projeto so pode ser aprovado caso haja orcamento disponivel para executa-lo
+
         // orcamente este que deve ser de uma pasta condizente com a do projeto
-        FolderEnum folder = secretariat.getFolder();
-    	List<FolderEnum> destinations = new ArrayList<>();
-    	destinations.add(folder);
+        FolderEnum folderProject = projetoDto.getFolder();
 
-    	List<BudgetDTO> budgets = budgetService.filterBudgetsIn(destinations);
-        Long idBudget = 0L;
-
-    	for (BudgetDTO budget : budgets) {
-            float totalAvailable = budget.getTotalAmount() - budget.getSpentAmount();
-
-            // desconta o valor do projeto do primeiro orcamento entrado!
-            if(totalAvailable > projetoDto.getCost()) {
-                idBudget = budget.getId();
-                break;
-            } else  {
-                System.out.printf("Deu ruim, o orçamento %d não possui saldo suficiente", budget.getId());
-            }
+    	if(!secretariat.getFolder().equals(folderProject)) {
+            System.out.println("Deu ruim, O projeto não pertence a mesma pasta da secretaria!");
+            return null;
         }
 
-        // 3. o gasto com o projeto devera ser contabilizado do DB do MS de orcamento
-        ExpenseDTO expenseDTO = new ExpenseDTO();
-    	expenseDTO.setExpense(projetoDto.getCost());
-
-        budgetService.expenseBudget(idBudget, expenseDTO);
-
         return projectService.create(projetoDto);
+    }
+
+    @GetMapping
+    public List<ProjectEntity> listProjects(@RequestParam(value = "approved", required = false) Boolean approved) {
+        if(approved != null) {
+            return projectService.listProjects(approved);
+        }
+        return projectService.listProjects();
     }
 
     // Um projeto só pode ser aprovado caso haja orçamento disponível para executá-lo, orçamento este que deve ser de
     // uma pasta condizente com a do projeto;
     @GetMapping("/{id}/aproved")
-    public void aprove() {
-        // 1. modicar rota da api de secretaria para devolver um boolean informando se a pasta possui recursos para o projeto
-        // ! aprovando a verba antes de confirmar a pasta !
-        // 2. confirmar a pasta
-        // 3 aprovar projeto
-        return;
+    public void aprove(@PathVariable Long id) {
+        ProjectEntity project = projectService.getProject(id);
+        if(project == null) {
+            System.out.println("Projeto não encontrado!");
+            return;
+        }
+        SecretariatDTO secretariatDTO = secretariatService.getSecretariat(project.getSecretariatID());
+        if(secretariatDTO == null) {
+            System.out.println("Secretaria do projeto não encontrado!");
+            return;
+        }
+
+        List<FolderEnum> destinationsAvaliables = new ArrayList<>();
+        destinationsAvaliables.add(secretariatDTO.getFolder());
+
+        List<BudgetDTO> budgetAvaliables = budgetService.filterBudgetsIn(destinationsAvaliables);
+        Float costProject = project.getCost();
+        BudgetDTO budgetSelected = null;
+
+        for(BudgetDTO budget : budgetAvaliables) {
+            if((budget.getTotalAmount() - budget.getSpentAmount()) >= costProject) {
+                budgetSelected = budget;
+                break;
+            }
+        }
+        if(budgetSelected == null) {
+            System.out.println("deu ruim, nenhum orçamento disponível para aprovação desse projeto!");
+            return;
+        }
+
+        ExpenseDTO expense = new ExpenseDTO();
+        expense.setExpense(costProject);
+        budgetService.expenseBudget(budgetSelected.getId(), expense);
+        project.setApproved(true);
+        projectService.create(project);
+        System.out.printf("\nProjeto aprovado, no orçamento %d com o custo de %.2f\n", budgetSelected.getId(), costProject);
     }
 
-    // O gasto com o projeto deverá ser contabilizado do DB do MS de Orçamento
-    public void budgetExpense() {
-        // 1. enviar PATH method o valor do projeto
-        return;
-    }
-    
     @GetMapping("/{id}/budget")
     public BudgetDTO getBudget(@PathVariable Long id) {
     	return budgetService.getBudget(id);

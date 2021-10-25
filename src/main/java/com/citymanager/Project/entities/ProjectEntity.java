@@ -23,4 +23,6 @@ public class ProjectEntity {
 
     @Enumerated(EnumType.STRING)
     private FolderEnum folder;
+
+    private Boolean approved = false;
 }
